@@ -4,8 +4,16 @@ import express from "express";
 import { createServer } from "node:http";
 import { checkboxService } from "./module/checkbox/checkbox.service.js";
 import { registerCheckboxHandlers } from "./module/checkbox/checkbox.handler.js";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL!
+  ],
+  credentials: true
+}))
 
 app.use(express.json());
 
@@ -21,13 +29,15 @@ app.use((req, res, next) => {
 });
 
 const server = createServer(app);
-
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: [
+      process.env.FRONTEND_URL!
+    ],
     methods: ["GET", "POST"],
-  },
-});
+    credentials: true
+  }
+})
 
 
 app.get("/api/checkboxes", async (req, res) => {
