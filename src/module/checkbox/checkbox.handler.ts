@@ -23,7 +23,7 @@ export function registerCheckboxHandlers(io: Server, socket: Socket): void {
   });
 
   socket.on("checkbox:update", async (data: unknown) => {
-    const { value, errors } = CheckboxDTO.safeValidate(data);
+    const { value , errors } = CheckboxDTO.safeValidate(data) as any;
 
     if (errors || !value) {
       socket.emit("checkbox:error", {
