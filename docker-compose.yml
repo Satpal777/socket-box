@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: socket-box-api
+    ports:
+      - "5000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped

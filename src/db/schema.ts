@@ -1,1 +1,1 @@
-export * from '../module/checkbox/checkbox.schema';
+export * from '../module/checkbox/checkbox.schema.js';

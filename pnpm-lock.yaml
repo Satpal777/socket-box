@@ -8,9 +8,18 @@ importers:
 
   .:
     dependencies:
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      drizzle-orm:
+        specifier: ^0.36.0
+        version: 0.36.4(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@9.6.0)(pg@8.20.0)(postgres@3.4.9)
       express:
         specifier: ^4.19.2
         version: 4.22.1
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
       postgres:
         specifier: ^3.4.9
         version: 3.4.9
@@ -33,18 +42,9 @@ importers:
       add:
         specifier: ^2.0.6
         version: 2.0.6
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       drizzle-kit:
         specifier: ^0.27.0
         version: 0.27.2
-      drizzle-orm:
-        specifier: ^0.36.0
-        version: 0.36.4(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@9.6.0)(pg@8.20.0)(postgres@3.4.9)
-      pg:
-        specifier: ^8.20.0
-        version: 8.20.0
       pnpm:
         specifier: ^10.33.2
         version: 10.33.2

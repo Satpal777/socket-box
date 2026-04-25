@@ -5,7 +5,7 @@ import { createServer } from "node:http";
 import { checkboxService } from "./module/checkbox/checkbox.service.js";
 import { registerCheckboxHandlers } from "./module/checkbox/checkbox.handler.js";
 
-const app = express(); 
+const app = express();
 
 app.use(express.json());
 
@@ -50,11 +50,11 @@ app.post("/api/checkboxes/:id/toggle", async (req, res) => {
     }
 
     const updated = await checkboxService.update(id, checked, userId);
-    
+
     // Broadcast to WebSocket clients
     console.log(`Broadcasting update for checkbox ${id}: checked=${checked}, updatedBy=${userId}`);
     io.emit("checkbox:updated", updated);
-    
+
     res.json(updated);
   } catch (error) {
     console.error("Failed to update checkbox:", error);
@@ -65,7 +65,7 @@ app.post("/api/checkboxes/:id/toggle", async (req, res) => {
 // Socket.IO handlers
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-  
+
   registerCheckboxHandlers(io, socket);
 
   socket.on("disconnect", () => {
@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
