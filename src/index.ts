@@ -40,6 +40,8 @@ const io = new Server(server, {
 })
 
 
+const onlineUsers = new Map<string, string>();
+
 app.get("/api/checkboxes", async (req, res) => {
   try {
     const checkboxes = await checkboxService.getAll();
@@ -61,7 +63,6 @@ app.post("/api/checkboxes/:id/toggle", async (req, res) => {
 
     const updated = await checkboxService.update(id, checked, userId);
 
-    // Broadcast to WebSocket clients
     console.log(`Broadcasting update for checkbox ${id}: checked=${checked}, updatedBy=${userId}`);
     io.emit("checkbox:updated", updated);
 
@@ -72,14 +73,23 @@ app.post("/api/checkboxes/:id/toggle", async (req, res) => {
   }
 });
 
-// Socket.IO handlers
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
+
+  socket.on("user:join", (userId: string) => {
+    onlineUsers.set(socket.id, userId);
+    io.emit("users:online", onlineUsers.size);
+    console.log(`User joined: ${userId}, total online: ${onlineUsers.size}`);
+  });
+
+  socket.emit("users:online", onlineUsers.size + 1);
 
   registerCheckboxHandlers(io, socket);
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    onlineUsers.delete(socket.id);
+    io.emit("users:online", onlineUsers.size);
+    console.log(`User disconnected, total online: ${onlineUsers.size}`);
   });
 });
 
