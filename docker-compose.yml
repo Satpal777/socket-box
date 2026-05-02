@@ -8,6 +8,10 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
       - DATABASE_URL=${DATABASE_URL}
       - PORT=${PORT}
+    deploy:
+      replicas: 2                  # number of backend instances
+      restart_policy:
+        condition: on-failure
     networks:
       - coolify
     labels:
