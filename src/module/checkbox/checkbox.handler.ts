@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { CheckboxDTO } from "./checkbox.dto.js";
 import { checkboxService } from "./checkbox.service.js";
+import { pub, CHANNELS } from "../../redis/redis.js";
 
 export function registerCheckboxHandlers(io: Server, socket: Socket): void {
 
@@ -23,7 +24,7 @@ export function registerCheckboxHandlers(io: Server, socket: Socket): void {
   });
 
   socket.on("checkbox:update", async (data: unknown) => {
-    const { value , errors } = CheckboxDTO.safeValidate(data) as any;
+    const { value, errors } = CheckboxDTO.safeValidate(data) as any;
 
     if (errors || !value) {
       socket.emit("checkbox:error", {
@@ -39,7 +40,7 @@ export function registerCheckboxHandlers(io: Server, socket: Socket): void {
         value.userId
       );
 
-      io.emit("checkbox:updated", updated);
+      pub.publish(CHANNELS.checkboxUpdated, JSON.stringify(updated));
     } catch (err) {
       console.error("[checkbox] update error:", err);
       socket.emit("checkbox:error", {
