@@ -10,26 +10,17 @@ services:
       - PORT=${PORT}
     networks:
       - coolify
-    deploy:
-      replicas: 2                  # number of backend instances
-      restart_policy:
-        condition: on-failure
+    restart: on-failure          # ← replaces deploy.restart_policy
     labels:
       - "traefik.enable=true"
-      # ── Router: your backend domain + HTTPS ─────────────────────────────
       - "traefik.http.routers.socket-box.rule=Host(`${BACKEND_DOMAIN}`)"
       - "traefik.http.routers.socket-box.entrypoints=https"
       - "traefik.http.routers.socket-box.tls=true"
       - "traefik.http.routers.socket-box.tls.certresolver=letsencrypt"
-      # ── Service: port your Express app listens on ────────────────────────
       - "traefik.http.services.socket-box.loadbalancer.server.port=5000"
-      # ── Sticky sessions: keeps WebSocket clients on the same instance ────
       - "traefik.http.services.socket-box.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.socket-box.loadbalancer.sticky.cookie.name=io"
 
 networks:
   coolify:
-    external: true   # Coolify's Traefik proxy runs on this shared network
-
-x-coolify:
-  replicas: 2     
+    external: true
