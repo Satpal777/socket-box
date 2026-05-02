@@ -7,13 +7,10 @@ services:
       - REDIS_URL=${REDIS_URL}
       - FRONTEND_URL=${FRONTEND_URL}
       - DATABASE_URL=${DATABASE_URL}
-      - PORT=${PORT}
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
+      - PORT=5000
     networks:
       - coolify
+    restart: on-failure
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.socket-box.rule=Host(`${BACKEND_DOMAIN}`)"
@@ -23,7 +20,11 @@ services:
       - "traefik.http.services.socket-box.loadbalancer.server.port=5000"
       - "traefik.http.services.socket-box.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.socket-box.loadbalancer.sticky.cookie.name=io"
+      - "traefik.http.services.socket-box.loadbalancer.sticky.cookie.httponly=true"
+      - "traefik.http.services.socket-box.loadbalancer.sticky.cookie.secure=true"
 
 networks:
   coolify:
     external: true
+x-coolify:
+  replicas: 3
