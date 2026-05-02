@@ -8,9 +8,12 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
       - DATABASE_URL=${DATABASE_URL}
       - PORT=${PORT}
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
     networks:
       - coolify
-    restart: on-failure          # ← replaces deploy.restart_policy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.socket-box.rule=Host(`${BACKEND_DOMAIN}`)"
