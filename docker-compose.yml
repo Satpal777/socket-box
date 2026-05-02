@@ -10,6 +10,10 @@ services:
       - PORT=${PORT}
     networks:
       - coolify
+    deploy:
+      replicas: 2                  # number of backend instances
+      restart_policy:
+        condition: on-failure
     labels:
       - "traefik.enable=true"
       # ── Router: your backend domain + HTTPS ─────────────────────────────
