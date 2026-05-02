@@ -2,8 +2,9 @@ import 'dotenv/config';
 import { Server } from "socket.io";
 import express from "express";
 import { createServer } from "node:http";
-import { checkboxService } from "./module/checkbox/checkbox.service.js";
+import { checkboxService, TOTAL_CHECKBOXES } from "./module/checkbox/checkbox.service.js";
 import { registerCheckboxHandlers } from "./module/checkbox/checkbox.handler.js";
+import { pub, sub, CHANNELS } from "./redis/redis.js";
 import cors from "cors";
 
 const app = express();
@@ -44,33 +45,19 @@ const onlineUsers = new Map<string, string>();
 
 app.get("/api/checkboxes", async (req, res) => {
   try {
-    const checkboxes = await checkboxService.getAll();
-    res.json(checkboxes);
+    const items = await checkboxService.getAll();
+    res.json({ total: TOTAL_CHECKBOXES, items });
   } catch (error) {
     console.error("Failed to fetch checkboxes:", error);
     res.status(500).json({ error: "Failed to fetch checkboxes" });
   }
 });
 
-app.post("/api/checkboxes/:id/toggle", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { checked, userId } = req.body;
+sub.subscribe(...Object.values(CHANNELS));
 
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
-    }
-
-    const updated = await checkboxService.update(id, checked, userId);
-
-    console.log(`Broadcasting update for checkbox ${id}: checked=${checked}, updatedBy=${userId}`);
-    io.emit("checkbox:updated", updated);
-
-    res.json(updated);
-  } catch (error) {
-    console.error("Failed to update checkbox:", error);
-    res.status(500).json({ error: "Failed to update checkbox" });
-  }
+sub.on("message", (channel, message) => {
+  console.log(`Broadcasting to channel ${channel}: ${message}`);
+  io.emit(channel, JSON.parse(message));
 });
 
 io.on("connection", (socket) => {
@@ -78,7 +65,7 @@ io.on("connection", (socket) => {
 
   socket.on("user:join", (userId: string) => {
     onlineUsers.set(socket.id, userId);
-    io.emit("users:online", onlineUsers.size);
+    pub.publish(CHANNELS.usersOnline, JSON.stringify(onlineUsers.size));
     console.log(`User joined: ${userId}, total online: ${onlineUsers.size}`);
   });
 
@@ -88,12 +75,12 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     onlineUsers.delete(socket.id);
-    io.emit("users:online", onlineUsers.size);
+    pub.publish(CHANNELS.usersOnline, JSON.stringify(onlineUsers.size));
     console.log(`User disconnected, total online: ${onlineUsers.size}`);
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
