@@ -23,6 +23,9 @@ importers:
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
+      jose:
+        specifier: ^6.2.3
+        version: 6.2.3
       pg:
         specifier: ^8.20.0
         version: 8.20.0
@@ -917,6 +920,9 @@ packages:
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
+
+  jose@6.2.3:
+    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
 
   lodash.defaults@4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
@@ -1952,6 +1958,8 @@ snapshots:
       - supports-color
 
   ipaddr.js@1.9.1: {}
+
+  jose@6.2.3: {}
 
   lodash.defaults@4.2.0: {}
 

@@ -24,6 +24,17 @@ export function registerCheckboxHandlers(io: Server, socket: Socket): void {
   });
 
   socket.on("checkbox:update", async (data: unknown) => {
+    const user = (socket as any).user;
+    if (!user) {
+      socket.emit("checkbox:error", { message: "Unauthorized" });
+      return;
+    }
+    const now = Math.floor(Date.now() / 1000);
+    if (user.exp && now > user.exp) {
+      socket.emit("checkbox:error", { message: "Token expired" });
+      socket.disconnect();
+      return;
+    }
     const { value, errors } = CheckboxDTO.safeValidate(data) as any;
 
     if (errors || !value) {
